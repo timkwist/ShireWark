@@ -13,7 +13,8 @@ Install TCPDUMP/LIBPCAP at http://www.tcpdump.org/ on a Linux machine
 Currently not intended to work on Mac.
 
 ###Compilation Instructions:
-Running the program:
+
+###Running the program:
 
 Run SharpPcapTest-master/SharpPcapTest/bin/Debug/SharpPcapTest.exe
 
