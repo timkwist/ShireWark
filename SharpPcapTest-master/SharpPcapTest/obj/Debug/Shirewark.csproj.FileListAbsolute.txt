@@ -21,3 +21,11 @@ C:\Users\Tyler\Documents\UNR\UNR\SharpPcapTest-master\SharpPcapTest\obj\Debug\Sh
 C:\Users\Tyler\Documents\Shirewark\ShireWark\SharpPcapTest-master\SharpPcapTest\bin\Debug\SharpPcapTest.exe.config
 C:\Users\Tyler\Documents\Shirewark\ShireWark\SharpPcapTest-master\SharpPcapTest\obj\Debug\SharpPcapTest.exe
 C:\Users\Tyler\Documents\Shirewark\ShireWark\SharpPcapTest-master\SharpPcapTest\obj\Debug\SharpPcapTest.pdb
+C:\Users\Tyler\Documents\Shirewark\ShireWark\SharpPcapTest-master\SharpPcapTest\bin\Debug\SharpPcapTest.exe
+C:\Users\Tyler\Documents\Shirewark\ShireWark\SharpPcapTest-master\SharpPcapTest\bin\Debug\SharpPcapTest.pdb
+C:\Users\Tyler\Documents\Shirewark\ShireWark\SharpPcapTest-master\SharpPcapTest\bin\Debug\PacketDotNet.dll
+C:\Users\Tyler\Documents\Shirewark\ShireWark\SharpPcapTest-master\SharpPcapTest\bin\Debug\SharpPcap.dll
+C:\Users\Tyler\Documents\Shirewark\ShireWark\SharpPcapTest-master\SharpPcapTest\bin\Debug\PacketDotNet.xml
+C:\Users\Tyler\Documents\Shirewark\ShireWark\SharpPcapTest-master\SharpPcapTest\bin\Debug\SharpPcap.pdb
+C:\Users\Tyler\Documents\Shirewark\ShireWark\SharpPcapTest-master\SharpPcapTest\bin\Debug\SharpPcap.xml
+C:\Users\Tyler\Documents\Shirewark\ShireWark\SharpPcapTest-master\SharpPcapTest\obj\Debug\Shirewark.csprojResolveAssemblyReference.cache

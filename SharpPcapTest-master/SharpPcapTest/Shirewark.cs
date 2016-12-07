@@ -85,7 +85,7 @@ namespace SharpPcapTest
                 new PacketArrivalEventHandler(device_OnPacketArrival);
 
             //Open the device for capturing
-            int readTimeoutMilliseconds = 1000;
+            int readTimeoutMilliseconds = 10000;
 
             //Opens the device to read all traffic through machine
             //Waits a maximum of readTimeoutMilliseconds ms
