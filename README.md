@@ -5,12 +5,12 @@ This project consists of three seperate sections, a client packnet sniffer, a 3r
 
 ##CLIENT APPLICATION (Located in SharpPcapTest-master)
 
-#BEFORE COMPILING
+###BEFORE COMPILING
 Install WinPcap at http://www.winpcap.org/ on a Windows machine
 Install TCPDUMP/LIBPCAP at http://www.tcpdump.org/ on a Linux machine
 Currently not intended to work on Mac.
 
-#Compilation Instructions:
+###Compilation Instructions:
 Running the program:
 Run SharpPcapTest-master/SharpPcapTest/bin/Debug/SharpPcapTest.exe
 Console menu should open, listing the available network network adapters available. Select the network adapter you would like the program to watch and report data on.
