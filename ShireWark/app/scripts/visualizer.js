@@ -4,163 +4,201 @@
 /* eslint-env browser */
 (function() {
 
+  // Containers for all the nodes and edges between them
   var nodes = new vis.DataSet([]);
-
-  // create an array with edges
   var edges = new vis.DataSet([]);
 
-  var maxPackets = 1;
+  //Visual options
+  var options = {};
+  var treeStructure = false;
+  var waitInterval = 0;
 
-  var intervalId;
+  //Interval ID used to stop and start the gathering of 'real-time' data
+  var intervalId = -1;
 
+  /**
+   * Initializes the network with the nodes (empty), edges (empty), and options
+   * to alter the networks visual appearance.
+   */
   function initializeEmptyNetwork() {
-    var container = document.getElementById('mynetwork');
+
+
+    //In case the nodes or edges have data clear them.
     nodes.clear();
     edges.clear();
+
+
+    initWithOptions();
+
+
+  }
+
+  function initWithOptions() {
+
+    //Get the HTML element that the network will be rendered on
+    var container = document.getElementById('mynetwork');
+
+    //Create a data object for the network
     var data = {
       nodes: nodes,
       edges: edges
     };
-    var options = {
+
+    //Create the options for the networks visual appearnce.
+    options = {
       nodes: {
         shape: 'dot',
         scaling: {
-          min: 5,
+          min: 3,
           max: 15
         }
-        // size: 25
       },
       edges: {
         scaling: {
           min: 1,
           max: 15
+        },
+        smooth: {
+          type: "vertical",
+          forceDirection: "none",
+          roundness: 0
         }
       },
-      // layout: {
-      //   hierarchical: {
-      //     direction: "UD",
-      //     levelSeparation: 250,
-      //     nodeSpacing: 100
-      //   }
-      // },
       physics: {
         enabled: true
-      },
-      "edges": {
-        "smooth": {
-          "type": "vertical",
-          "forceDirection": "none",
-          "roundness": 0
-        }
-      },
+      }
     };
+
+    if(treeStructure)
+    {
+      options.layout = {
+        hierarchical: {
+          direction: "UD",
+          levelSeparation: 250,
+          nodeSpacing: 100
+        }
+      };
+    }
+
+    //Initialize the visual network with the provided parameters
     var network = new vis.Network(container, data, options);
+
   }
 
+  //When the page is fully rendered initialize the network
+  $(document).ready(function() {
+    initializeEmptyNetwork();
+  });
 
-  initializeEmptyNetwork();
 
+  //When the tree structure checkbox is clicked update the UI
+  $('#treeCheck').change(function() {
+    treeStructure = $(this).is(":checked");
+    initWithOptions();
+  });
 
-  $('#stopBtn').click(function() {
+  //When the visual delay checkbox is selected adjust the waitInterval for updating the network
+  $('#waitCheck').change(function() {
+    waitInterval = $(this).is(":checked") ? 100 : 0;
+  });
 
-    clearInterval(intervalId);
-
-  })
-
+  //Click event handler for the start button
   $('#startBtn').click(function() {
 
-    var curTime = new Date();
-    curTime.setSeconds(curTime.getSeconds() - 15);
+    //If there is a valid intervalId then we are running and should stop
+    if(intervalId != -1) {
 
-    console.log(curTime.toMysqlFormat());
+      //Cancel the interval to stop calling the database
+      clearInterval(intervalId);
+      intervalId = -1;
 
-    intervalId = setInterval(function() {
+      //Change the UI accordingly
+      $('#startBtn').html("Start");
+
+      //Cancel the event
+      return;
+    }
+
+    // Update the UI since we are starting
+    $('#startBtn').html("Stop");
+
+
+    //Set the intervalId for the funciton that will call the database every 5 seconds
+
+    var intervalFunc = function () {
+      //The current time to filter the DB query
+      var curTime = new Date();
+
+      //Go back in time a few seconds to ensure we get some data
+      curTime.setSeconds(curTime.getSeconds() - 15);
+
+      //Send the request to the AWS server
       $.get('https://2iyjl40fvc.execute-api.us-west-2.amazonaws.com/prod?where=date_created>\"' + curTime.toMysqlFormat() +'\"', {} , updateInfo, 'json');
-    }, 5000);
+    };
 
-    // $.get('https://2iyjl40fvc.execute-api.us-west-2.amazonaws.com/prod?where=source=\"199.9.254.145\"', {} , updateInfo, 'json');
-
-    // $.get('https://2iyjl40fvc.execute-api.us-west-2.amazonaws.com/prod', {} , updateInfo, 'json');
-    maxPackets = 1;
+    intervalFunc();
+    intervalId = setInterval(intervalFunc, 5000);
 
   });
 
+
   function updateInfo(jsonResponse) {
 
-    var curTime = new Date();
+    var waitTime = 0;
 
-    var updatedList = _.filter(jsonResponse.routes, function(route) {
+    //Iterate through each route and update the visual network
+    _.each(jsonResponse.routes, function(route) {
 
-      var otherDate = convertDate(new Date(route.date));
+      //Wrap the update in a timeout so that the UI doesn't get spammed with a giant update
+      //every 5 seconds unless the visual delay is not checked
+      setTimeout(function() {
 
-      return otherDate <= curTime;
+        //If the stopped button was pressed kill all future timeouts
+        if(intervalId == -1)
+          return;
 
-      //TODO: Change the inequality!
+        //Update the nodes (creating any new ones if they do not already exist)
+        nodes.update({id: route.source, label: route.source});
+        nodes.update({id: route.dest, label: route.dest});
 
-    });
+        //Create an edgeId using the source and destination
+        var edgeId = route.source + " " + route.dest;
 
-    _.each(updatedList, function(route) {
-
-      console.log(route.Size_packets);
-
-      nodes.update({id: route.source, label: route.source, value: route.Size_packets});
-      nodes.update({id: route.dest, label: route.dest});
+        //A placeholder for the route's data from the last iteration
+        var oldSize = 0;
 
 
-      // if(nodes.get(route.source) == null) {
-      //   nodes.add({id: route.source, label: route.source, value: route.Num_packets});
-      // }
-      // else {
-      //   var oldPackets = nodes.get(route.source).Num_packets;
-      //   nodes.update({id: route.source, value: oldPackets + route.Num_packets});
-      // }
-      //
-      // if(nodes.get(route.dest) == null) {
-      //   nodes.add({id: route.dest, label: route.dest, value: route.Num_packets});
-      // }
-      // else {
-      //   var oldPackets = nodes.get(route.dest).Num_packets;
-      //   nodes.update({id: route.dest, value: oldPackets + route.Num_packets});
-      // }
+        //If there was an older route get the old size
+        if(edges.get(edgeId) !== null) {
+          oldSize = edges.get(edgeId).value;
+        }
 
-      var edgeId = route.source + " " + route.dest;
-      var oldPackets = 0;
+        //Update the edge (or create a new one if it didn't already exist)
+        edges.update(
+          {
+            id: edgeId,
+            from: route.source,
+            to: route.dest,
+            value: oldSize + route.Size_packets,
+            title: oldSize + (route.Size_packets) + " bytes",
+            arrows: 'to',
+            length: 350,
+            arrowStrikethrough: false
+          });
+      }, waitTime);
 
-      if(edges.get(edgeId) !== null) {
-        oldPackets = edges.get(edgeId).value;
-        console.log(oldPackets);
-      }
+      //Increment the waitTime with the interval
+      waitTime += waitInterval;
 
-      // console.log(route.Num_packets);
-
-      edges.update(
-        {
-          id: edgeId,
-          from: route.source,
-          to: route.dest,
-          value: oldPackets + (route.Size_packets), //* route.Size_packets),
-          title: oldPackets + (route.Size_packets) + " bytes", //* route.Size_packets),
-          arrows: 'to',
-          length: 350,
-          arrowStrikethrough: false
-      });
+      //Make sure the waitTime isn't greater than 10 seconds otherwise things will get too out of sync
+      if(waitTime >= 10000)
+        waitTime = 10000;
 
     });
-
-
-
-
   }
-
-
-  function convertDate(date) {
-    date.setTime( date.getTime());// + date.getTimezoneOffset()*60*1000 );
-    return date;
-  }
-
 
   /**
-   * You first need to create a formatting function to pad numbers to two digits…
+   * Format dates so that there are at least two digits
    **/
   function twoDigits(d) {
     if(0 <= d && d < 10) return "0" + d.toString();
@@ -169,10 +207,7 @@
   }
 
   /**
-   * …and then create the method to output the date string as desired.
-   * Some people hate using prototypes this way, but if you are going
-   * to apply this to more than one Date object, having it as a prototype
-   * makes sense.
+   * Converts the javascript Date object to a MysqlFormat that can be sent in a query
    **/
   Date.prototype.toMysqlFormat = function() {
     return this.getFullYear() + "-" + twoDigits(1 + this.getMonth()) + "-" + twoDigits(this.getDate()) + " " + twoDigits(this.getHours()) + ":" + twoDigits(this.getMinutes()) + ":" + twoDigits(this.getSeconds());
