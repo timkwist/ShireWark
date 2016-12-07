@@ -140,9 +140,13 @@ namespace SharpPcapTest
                 //Increment or add toDictionary to the dictionary
                 increment(toDictionary, length);
 
+                //If it has be segmentTime seconds since last sending
                 if (timeToSend())
                 {
+                    //Send to the server
                     toServer();
+
+                    //Set the current time for reference
                     now = DateTime.Now;
                 }
             }
@@ -166,15 +170,25 @@ namespace SharpPcapTest
             //If we can get a value from current
             if ( timesVisited.ContainsKey( current ) )
             {
+                //Get the current count
                 count = timesVisited[current][0];
+
+                //Get the current length
                 int tempLength = timesVisited[current][1];
+
+                //Set a temporary array containing an incremented count and length
                 int[] tempArray = { count + 1, tempLength + length };
 
+                //Sets the value of the dictionary key current to tempArray
                 timesVisited[current] = tempArray;
             }
+            //Otherwise
             else
             {
+                //Create a temporary array to hold count and length
                 int[] tempArray = { count, length };
+
+                //Add key current to the dictionary with value tempArray
                 timesVisited.Add(current, tempArray);
             }
         }
@@ -202,17 +216,28 @@ namespace SharpPcapTest
             //Get the key collection
             Dictionary<string, int[]>.KeyCollection keys = timesVisited.Keys;
 
+            //Create string json with the start to an array of objects
             string json = "{\"events\":[";
 
+            //Loop through all keys, storing the string in current
             foreach ( string current in keys)
             {
+                //Find the space in the key
                 int space = current.IndexOf(' ');
+
+                //Get the string substring before the first space, which is the source IP
                 string tempSource = current.Substring(0, space);
+
+                //Get the substring after the space, which is the destination IP
                 string tempDest = current.Substring(space + 1);
+
+                //Get Num_packets and Size_packets from the dictionary
                 int[] temp = timesVisited[current];
                 int num_Packets = temp[0];
                 int size_Packets = temp[1];
 
+                //Serialize a JSON object 
+                //Comes out to {"source":tempSource,"dest":tempDest,"Num_packets":num_Packets,"Size_packets":size_Packets}
                 string tempJSON = new JavaScriptSerializer().Serialize(new
                 {
                     source = tempSource,
@@ -222,6 +247,7 @@ namespace SharpPcapTest
 
                 });
 
+                //Add that into the JSON array with a comma after
                 json += tempJSON + ",";
 
             }
