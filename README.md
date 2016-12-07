@@ -13,6 +13,7 @@ Install TCPDUMP/LIBPCAP at http://www.tcpdump.org/ on a Linux machine
 Currently not intended to work on Mac.
 
 ###Compilation Instructions:
+Compilation has only been tested in Windows, but can be done through any C# compiler on Linux. In Windows, the easiest compilation is to open up the project in Visual Studio and run from the start button.
 
 ###Running the program:
 
