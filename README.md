@@ -30,10 +30,10 @@ Information on the Lamda function that is run can be found in "TestGetSQL" funct
 
 Information on the MySQL database can be viewed on the "testdb" database instance in AWS RDS.
 
-## VISUALIZER APPLICATION (Located in ShireWark/app/index.html)
+## VISUALIZER APPLICATION (Located in [ShireWark/app/index.html](ShireWark/app/index.html))
 
 To launch the visualizer application simply navigate to the app directory and open the index.html in a modern browser (Tested in Google Chrome). 
 
 To start gathering real-time network information click the Start button and watch the network update in real-time. The various options near the start button can be selected while the script is running. Additionaly, the graph can be zoomed in and dragged around with the mouse.
 
-The source code for the visualizer, with comments, can be found in [here](ShireWark/app/scripts/visualizer.js) .
+The source code for the visualizer, with comments, can be found in [here](ShireWark/app/scripts/visualizer.js).
